@@ -4,58 +4,51 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #define PERMS 0666 /*lectura y escritura para propietario, grupo y otros*/
-
+#define SIZE 8     // 7 bytes previos + 1 byte del mensaje
+/** retorna un char con valor de 0 a 255*/
 unsigned char aleatorio()
 {
-    return (unsigned char)(rand() % 256); // retorna valor 0-255
+    return (unsigned char)(rand() % 256);
+}
+/** cada byte sera precedido por 7 bytes*/
+void encriptado(int fd, char mensaje)
+{
+    char buffer[SIZE];
+    for (int i = 0; i < SIZE-1; i++)
+    {
+        buffer[i] = (char)aleatorio();
+    }
+    buffer[7] = mensaje;
+    write(fd, buffer, SIZE);
 }
 
 int main(int argc, char *argv[])
 {
     srand(1); // revisar
-    int fd = STDOUT_FILENO;  // Por defecto, salida estándar
-    const char *output_file = NULL;
-
+    int fd = STDOUT_FILENO;
+    char *mensaje = argv[argc - 1];
     if (argc > 2)
     {
-        output_file = argv[1];
-        fd = open(output_file, O_WRONLY | O_CREAT | O_TRUNC, PERMS);
-        if (fd == -1)
+
+        fd = open(argv[1], O_WRONLY | O_CREAT | O_TRUNC, PERMS);
+        if (fd == -1) // ocurrio algo
         {
-            perror("Error al abrir el archivo");
             exit(EXIT_FAILURE);
         }
     }
-
-    // FILE *output = (fd == -1) ? stdout : fdopen(fd, "w");
-    // if (output == NULL)
-    // {
-    //     perror("Error al abrir el archivo");
-    //     if (fd != -1)
-    //     close(fd);
-    //     exit(EXIT_FAILURE);
-    // }
-    
-    char *mensaje = argv[argc - 1];
-    char buffer[8];
+    if (argc == 1)
+    {
+        exit(EXIT_FAILURE);
+    }
     while (*mensaje)
     {
-        for (int i = 0; i < 7; i++)
-        {
-            buffer[i] = (char) aleatorio();
-            // fputc(aleatorio(), output); // Escribir el carácter aleatorio
-        }
-        // Imprimir el carácter original
-        buffer[7] = *mensaje;
-        // fputc(*mensaje, output);
-        write(fd, buffer,  8);
+        encriptado(fd, *mensaje);
         mensaje++;
     }
-
     // si fd mantiene el valor de salida estandar
-    if (fd != STDOUT_FILENO) { 
+    if (fd != STDOUT_FILENO)
+    {
         close(fd);
     }
-
     exit(EXIT_SUCCESS);
 }
