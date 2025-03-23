@@ -10,7 +10,6 @@ unsigned char aleatorio()
 {
     return (unsigned char)(rand() % 256);
 }
-/** cada byte sera precedido por 7 bytes*/
 void encriptado(int fd, char mensaje)
 {
     char buffer[SIZE];
@@ -25,11 +24,10 @@ void encriptado(int fd, char mensaje)
 int main(int argc, char *argv[])
 {
     srand(1); // revisar
-    int fd = STDOUT_FILENO;
+    int fd = STDOUT_FILENO; // 1  
     char *mensaje = argv[argc - 1];
     if (argc > 2)
     {
-
         fd = open(argv[1], O_WRONLY | O_CREAT | O_TRUNC, PERMS);
         if (fd == -1) // ocurrio algo
         {
@@ -45,8 +43,8 @@ int main(int argc, char *argv[])
         encriptado(fd, *mensaje);
         mensaje++;
     }
-    // si fd mantiene el valor de salida estandar
-    if (fd != STDOUT_FILENO)
+    // si fd no mantiene el valor de salida estandar
+    if (fd != STDOUT_FILENO) 
     {
         close(fd);
     }
