@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
         exit(EXIT_SUCCESS); // nada mas que hacer salir
     }
     char *mensaje = argv[argc - 1]; // porque? el mensaje es el ultimo
-    if (argc == 3)
+    if (argc == 3)                  // caso bin/encrypt message.msg
     {
         fd = open(argv[1], O_WRONLY | O_CREAT | O_TRUNC, PERMS);
         if (fd == -1) // ocurrio algo
