@@ -3,10 +3,11 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#define BUFFER_SIZE 1024 // bloque de lectura
 
 void desencriptar(int fd)
 {
-    char buffer[127];
+    char buffer[BUFFER_SIZE];
     ssize_t bytes_leidos;
     while ((bytes_leidos = read(fd, buffer, sizeof(buffer))) > 0)
     {
@@ -18,8 +19,9 @@ int main(int argc, char *argv[])
 {
     // fd = file descriptor
     // si no hay argumentos entrada estandar sino abre archivo
+
     int fd = (argc == 1) ? STDIN_FILENO : open(argv[1], O_RDONLY);
-    if (fd < 0) // ocurrido algun incoveniente
+    if (fd < 0) // ocurrido a1lgun incoveniente
     {
         perror("Error");
         return 1;
